@@ -7,14 +7,14 @@ export const App = new Agile();
 
 // Create large State
 export const MY_LARGE_COLLECTION = App.createCollection({
-  initialData: Array.from(Array(20).keys()).map((i) => ({
+  initialData: Array.from(Array(2000).keys()).map((i) => ({
     id: i,
     value: `Field #${i + 1} value`,
   })),
 });
 
 function FieldEditor({ id }: { id: number }) {
-  const item = useAgile(MY_LARGE_COLLECTION.getItemWithReference(id));
+  const item = useAgile(MY_LARGE_COLLECTION.getItem(id));
   return (
     <p>
       Last render at: {new Date().toISOString()}{" "}
@@ -29,12 +29,16 @@ function FieldEditor({ id }: { id: number }) {
 }
 
 function JsonDump() {
-  const collection = useAgile(MY_LARGE_COLLECTION);
+  const tenItemLargeGroup = MY_LARGE_COLLECTION.createGroup(
+    "tenItemLargeGroup",
+    MY_LARGE_COLLECTION.getGroupWithReference("default").value.slice(0, 10)
+  );
+  const collection = useAgile(tenItemLargeGroup);
   return (
     <p>
       Last render at: {new Date().toISOString()} (
       <b>JSON dump of the first 10 fields</b>) :<br />
-      {JSON.stringify(collection.slice(0, 10), undefined, 4)}
+      {JSON.stringify(collection, undefined, 4)}
     </p>
   );
 }
