@@ -1,5 +1,5 @@
 import React from "react";
-import { useAgile } from "@agile-ts/react";
+import { useAgile, useProxy } from "@agile-ts/react";
 import { Agile } from "@agile-ts/core";
 
 // Create Agile Instance
@@ -29,11 +29,7 @@ function FieldEditor({ id }: { id: number }) {
 }
 
 function JsonDump() {
-  const tenItemLargeGroup = MY_LARGE_COLLECTION.createGroup(
-    "tenItemLargeGroup",
-    MY_LARGE_COLLECTION.getGroupWithReference("default").value.slice(0, 10)
-  );
-  const collection = useAgile(tenItemLargeGroup);
+  const collection = useProxy(MY_LARGE_COLLECTION);
   return (
     <p>
       Last render at: {new Date().toISOString()} (

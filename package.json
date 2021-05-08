@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@agile-ts/core": "^0.0.14",
-    "@agile-ts/react": "^0.0.15",
+    "@agile-ts/core": "^0.0.15",
+    "@agile-ts/react": "^0.0.16",
     "@hookstate/core": "^3.0.7",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
