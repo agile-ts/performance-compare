@@ -1,18 +1,17 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import ATLargeState from "./state-manager/agile-ts/ATLargeState";
-import HSLargeState from "./state-manager/hookstate/HSLargeState";
+import * as Agile from "./state-manager/agile-ts";
+import * as Hookstate from "./state-manager/hookstate";
 
 const App = () => {
   return (
     <Router>
-      <Route path="/agile/largestate">
-        <ATLargeState />
-      </Route>
-      <Route path="/hookstate/largestate">
-        <HSLargeState />
-      </Route>
+      <Routes>
+        <Route path="/" element={<Agile.LargeState />} />
+        <Route path="/agile/*" element={<Agile.SubRoute />} />
+        <Route path="/hookstate/*" element={<Hookstate.SubRoute />} />
+      </Routes>
     </Router>
   );
 };

@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useAgile, useProxy } from "@agile-ts/react";
-import { Agile } from "@agile-ts/core";
+import { Agile, globalBind } from "@agile-ts/core";
 
 // Create Agile Instance
 export const App = new Agile();
@@ -34,20 +34,22 @@ function JsonDump() {
     <p>
       Last render at: {new Date().toISOString()} (
       <b>JSON dump of the first 10 fields</b>) :<br />
-      {JSON.stringify(collection, undefined, 4)}
+      {JSON.stringify(collection.slice(0, 10), undefined, 4)}
     </p>
   );
 }
 
-const ATLargeState = () => {
+export const LargeState = () => {
+  // For better debugging
+  useEffect(() => {
+    globalBind("__collection__", MY_LARGE_COLLECTION);
+  }, []);
   return (
     <>
       <JsonDump />
-      {MY_LARGE_COLLECTION.getAllItemValues().map((item, i) => (
-        <FieldEditor key={i} id={item.id} />
+      {MY_LARGE_COLLECTION.getGroup("default")?.value.map((id, i) => (
+        <FieldEditor key={i} id={id as any} />
       ))}
     </>
   );
 };
-
-export default ATLargeState;

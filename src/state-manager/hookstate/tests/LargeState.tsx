@@ -26,15 +26,13 @@ function JsonDump(props: { state: State<string[]> }) {
   );
 }
 
-const HSLargeState = () => {
+export const LargeState = () => {
   // we use local per component state,
   // but the same result would be for the global state
   // if it was created by createState
   const state = useState(
-    Array.from(Array(20).keys()).map((i) => `Field #${i + 1} value`)
+    Array.from(Array(2000).keys()).map((i) => `Field #${i + 1} value`)
   );
-
-  console.log("Main State", state);
 
   return (
     <>
@@ -52,5 +50,3 @@ const HSLargeState = () => {
     </>
   );
 };
-
-export default HSLargeState;
