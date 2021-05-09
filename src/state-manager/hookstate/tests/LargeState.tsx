@@ -5,7 +5,6 @@ import { State, useState } from "@hookstate/core";
 
 function FieldEditor(props: { fieldState: State<string> }) {
   const scopedState = useState(props.fieldState);
-  console.log("Scope State", props.fieldState, scopedState.get());
   return (
     <p>
       Last render at: {new Date().toISOString()}{" "}
@@ -34,15 +33,15 @@ export const LargeState = () => {
   // if it was created by createState
   // NOTE: The State is subscribed through the .get() method to the Component and not through the useState() hook
   const state = useState(
-    Array.from(Array(2000).keys()).map((i) => `Field #${i + 1} value`)
+    Array.from(Array(5000).keys()).map((i) => `Field #${i + 1} value`)
   );
 
   return (
-    <>
+    <React.Fragment>
       <JsonDump state={state} />
       {state.map((taskState, taskIndex) => (
         <FieldEditor key={taskIndex} fieldState={taskState} />
       ))}
-    </>
+    </React.Fragment>
   );
 };
