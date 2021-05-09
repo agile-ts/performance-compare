@@ -1,3 +1,5 @@
+// Inspired by https://hookstate.js.org/docs/performance-large-state
+
 import React from "react";
 import { State, useState } from "@hookstate/core";
 
@@ -30,6 +32,7 @@ export const LargeState = () => {
   // we use local per component state,
   // but the same result would be for the global state
   // if it was created by createState
+  // NOTE: The State is subscribed through the .get() method to the Component and not through the useState() hook
   const state = useState(
     Array.from(Array(2000).keys()).map((i) => `Field #${i + 1} value`)
   );
@@ -40,13 +43,6 @@ export const LargeState = () => {
       {state.map((taskState, taskIndex) => (
         <FieldEditor key={taskIndex} fieldState={taskState} />
       ))}
-
-      {/* Now the State is through the .get() subscribed to the parent component, which will rerender the children too
-          -> HookState doesn't subscribe through the hook. It subscribes through the .get() method
-          state.map((taskState) => (
-        <p>{taskState.get()}</p>
-      ))
-         */}
     </>
   );
 };

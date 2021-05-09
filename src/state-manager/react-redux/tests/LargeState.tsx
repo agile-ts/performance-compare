@@ -7,6 +7,10 @@ interface ItemInterface {
   value: string;
 }
 
+interface ItemsState {
+  items: ItemInterface[];
+}
+
 type UpdateItemAction = { type: string; payload: ItemInterface };
 
 // ============================================================================================
@@ -22,23 +26,33 @@ const updateItem = (id: number, newValue: string): UpdateItemAction => {
 };
 
 // Reducer
-const initialState = Array.from(Array(5000).keys()).map((i) => ({
-  id: i,
-  value: `Field #${i + 1} value`,
-}));
+const initialState: ItemsState = {
+  items: Array.from(Array(5000).keys()).map((i) => ({
+    id: i,
+    value: `Field #${i + 1} value`,
+  })),
+};
 
 const itemsReducer = (
-  state: ItemInterface[] = initialState,
+  state: ItemsState = initialState,
   action: UpdateItemAction
 ) => {
   switch (action.type) {
     case "UPDATE_ITEM":
-      state.map((item) => {
-        if (item.id === action.payload.id) {
-          item.value = action.payload.value;
-        }
-      });
-      return state;
+      const items = state.items;
+      const itemIndex = items.findIndex(
+        (item) => item.id === action.payload.id
+      );
+      const updatedItems = [...items];
+      updatedItems[itemIndex] = {
+        id: action.payload.id,
+        value: action.payload.value,
+      };
+
+      return {
+        ...state,
+        items: updatedItems,
+      };
     default:
       return state;
   }
@@ -52,15 +66,13 @@ const store = createStore(itemsReducer);
 // ============================================================================================
 
 function FieldEditor({ id }: { id: number }) {
-  const item = useSelector<ItemInterface[], ItemInterface | undefined>(
-    (state) => {
-      for (const item of state) {
-        if (item.id === id) {
-          return item;
-        }
+  const item = useSelector<ItemsState, ItemInterface | undefined>((state) => {
+    for (const item of state.items) {
+      if (item.id === id) {
+        return item;
       }
     }
-  );
+  });
   const dispatch = useDispatch();
 
   return (
@@ -75,7 +87,9 @@ function FieldEditor({ id }: { id: number }) {
 }
 
 function JsonDump() {
-  const items = useSelector<ItemInterface[], ItemInterface[]>((state) => state);
+  const items = useSelector<ItemsState, ItemInterface[]>(
+    (state) => state.items
+  );
   return (
     <p>
       Last render at: {new Date().toISOString()} (
@@ -89,7 +103,7 @@ export const LargeState = () => {
   return (
     <Provider store={store}>
       <JsonDump />
-      {store.getState().map((item, i) => (
+      {store.getState().items.map((item, i) => (
         <FieldEditor key={i} id={item.id} />
       ))}
     </Provider>
