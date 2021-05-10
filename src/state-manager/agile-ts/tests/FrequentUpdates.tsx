@@ -4,30 +4,30 @@ import { Agile, State } from "@agile-ts/core";
 
 const App = new Agile();
 
-const MATRIX = App.createState<State<State<number>[]>[]>([]);
+const TOTAL_ROW_COUNT = App.createState(50);
+const TOTAL_COLUMN_COUNT = App.createState(50);
+const MATRIX = App.createComputed<State<State<number>[]>[]>(() => {
+  return Array.from(Array(TOTAL_ROW_COUNT.value).keys()).map((i) =>
+    App.createState(
+      Array.from(Array(TOTAL_COLUMN_COUNT.value).keys()).map((j) =>
+        App.createState(0)
+      )
+    )
+  );
+});
 
-const TableCell = ({ cellValue }: { cellValue: State<number> }) => {
-  const value = useAgile(cellValue);
+const TableCell = ({ cellState }: { cellState: State<number> }) => {
+  const value = useAgile(cellState);
   return <>{value.toString(16)}</>;
 };
 
 const MatrixView = (props: {
-  totalRows: number;
-  totalColumns: number;
   interval: number;
   callsPerInterval: number;
+  totalRows: number;
+  totalColumns: number;
 }) => {
   const { totalRows, totalColumns } = props;
-
-  useEffect(() => {
-    MATRIX.set(
-      Array.from(Array(totalRows).keys()).map((i) =>
-        App.createState(
-          Array.from(Array(totalColumns).keys()).map((j) => App.createState(0))
-        )
-      )
-    );
-  }, [totalColumns, totalRows]);
 
   // schedule interval updates
   useEffect(() => {
@@ -62,7 +62,7 @@ const MatrixView = (props: {
             <tr key={rowIndex}>
               {row.value.map((value, columnIndex) => (
                 <td key={columnIndex}>
-                  <TableCell cellValue={value} />
+                  <TableCell cellState={value} />
                 </td>
               ))}
             </tr>
@@ -74,9 +74,11 @@ const MatrixView = (props: {
 };
 
 export const FrequentUpdates = () => {
-  const [totalRows, setTotalRows] = useState(10);
-  const [totalColumns, setTotalColumns] = useState(10);
-  const [rate, setRate] = useState(10);
+  const [totalRows, totalColumns] = useAgile([
+    TOTAL_ROW_COUNT,
+    TOTAL_COLUMN_COUNT,
+  ]);
+  const [rate, setRate] = useState(50);
   const [timer, setTimer] = useState(10);
 
   return (
@@ -84,15 +86,21 @@ export const FrequentUpdates = () => {
       <div>
         <p>
           <span>Total rows: {totalRows} </span>
-          <button onClick={() => setTotalRows((p) => p - 10 || 10)}>-10</button>
-          <button onClick={() => setTotalRows((p) => p + 10)}>+10</button>
+          <button onClick={() => TOTAL_ROW_COUNT.set((p) => p - 10 || 10)}>
+            -10
+          </button>
+          <button onClick={() => TOTAL_ROW_COUNT.set((p) => p + 10)}>
+            +10
+          </button>
         </p>
         <p>
           <span>Total columns: {totalColumns} </span>
-          <button onClick={() => setTotalColumns((p) => p - 10 || 10)}>
+          <button onClick={() => TOTAL_COLUMN_COUNT.set((p) => p - 10 || 10)}>
             -10
           </button>
-          <button onClick={() => setTotalColumns((p) => p + 10)}>+10</button>
+          <button onClick={() => TOTAL_COLUMN_COUNT.set((p) => p + 10)}>
+            +10
+          </button>
         </p>
         <p>Total cells: {totalColumns * totalRows}</p>
         <p>
